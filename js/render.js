@@ -16,7 +16,7 @@ var images = {
 	"king": loadImage("king.png"),
 	"nuke": loadImage("nuke.png"),
 	"suicide": loadImage("suicide.png"),
-}
+};
 
 function lerp(x, y, a) {
 	return x + (y - x) * a;
@@ -111,7 +111,7 @@ function render() {
 	}*/
 	
 	teams.forEach(function (team) {
-		if (team.render != undefined) {
+		if (team.render !== undefined) {
 			team.render.apply(team);
 		}
 	});
@@ -143,7 +143,7 @@ function render() {
 			(blockHeight-sizeY)/2 + y, 
 			sizeX, 
 			sizeY);
-		if (dot.type != undefined && dot.type.image != undefined) {
+		if (dot.type !== undefined && dot.type.image !== undefined) {
 			ctx.drawImage(images[dot.type.image], x, y);
 		}
 	});
@@ -158,7 +158,7 @@ function render() {
 		if (count > 0) {
 			var c = teamCOG[team.name],
 				prev = prevTitles[team.name];
-			if (c!=undefined&&prev!=undefined) {
+			if (c !== undefined && prev !== undefined) {
 				var x = (blockWidth + blockMargin) * lerp(prev.x, c.x, interpolate.a) - team.name.length*3,
 					y = (blockHeight + blockMargin) * lerp(prev.y, c.y, interpolate.a) + 10;
 				ctx.fillText(team.name, x, y);
@@ -176,20 +176,20 @@ function render() {
 		blockHeight);
 	
 	var hover = get(mouse.x, mouse.y);
-	if (hover != undefined) {
+	if (hover !== undefined) {
 		var h = window.innerHeight - 8;
 		ctx.font = "16px 'Roboto', sans-serif";
 		ctx.fillStyle = hover.team.color;
 		ctx.fillText(hover.team.name, 0, h);
 		h -= 16;
-		if (hover.type != undefined && hover.type.description != undefined) {
+		if (hover.type !== undefined && hover.type.description !== undefined) {
 			ctx.fillStyle = "white";
 			ctx.fillText(hover.type.description, 0, h);
 		}
 	}
 	
-	if (down && selectedTeam != undefined) {
-		if (mouse.y >= 0 && get(mouse.x, mouse.y) == undefined) {
+	if (down && selectedTeam !== undefined) {
+		if (mouse.y >= 0 && get(mouse.x, mouse.y) === undefined) {
 			create(selectedTeam, mouse.x, mouse.y);
 		} else {
 			setTeam(get(mouse.x, mouse.y), selectedTeam);

@@ -1,4 +1,7 @@
-function shuffle(o){for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x); return o;};
+function shuffle (o) {
+	for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+}
 
 addTeam({"number":1523,"name": "Mars", "color": "rgb(255, 0,  0)",	"ai": mainAI});
 addTeam({"number":1557,"name": "12VoltBolt",				"color": "rgb(191, 63, 63)",	"ai": mainAI});
@@ -17,7 +20,7 @@ var ninjas = addTeam({"number":2383,"name": "Ninjineers",				"ai": mainAI,
 				ninjaT = 0;
 		}
 }}),
-	ninjaT = 0
+	ninjaT = 0;
 	ninjaD = 1;
 Object.defineProperty(ninjas, "color", {
 	"get": function () {

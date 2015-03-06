@@ -40,7 +40,7 @@ function create(team, x, y) {
 		"oldY":		y,
 		"age":		0
 	};
-	if (team.spawn != undefined) {
+	if (team.spawn !== undefined) {
 		team.spawn(dot);
 	}
 	dots.push(dot);
@@ -63,7 +63,7 @@ function aiTick() {
 	teamCOG = {};
 	dots.forEach(function(dot) {
 		combinedX += dot.x;
-		combinedY += dot.y
+		combinedY += dot.y;
 		teamCounts[dot.team.name] = (teamCounts[dot.team.name] || 0) + 1;
 		
 		teamCOG[dot.team.name] = teamCOG[dot.team.name] || {"x":0,"y":0,"i":0,"totalX":0,"totalY":0};
@@ -88,7 +88,7 @@ var ai = {
 	 */
 	"infect": function (dot, target, dotWinOdds) {
 		dotWinOdds = dotWinOdds || 1;
-		if (dot != undefined && target != undefined) {
+		if (dot !== undefined && target !== undefined) {
 			if (target.team != dot.team) {
 				if (Math.random() < dotWinOdds)
 					setTeam(target, dot.team);
@@ -107,7 +107,7 @@ var ai = {
 	 */
 	"attack": function (dot, target, dotWinOdds) {
 		dotWinOdds = dotWinOdds || 1;
-		if (dot != undefined && target != undefined) {
+		if (dot !== undefined && target !== undefined) {
 			if (Math.random() < dotWinOdds) {
 				kill(target);
 				return true;
@@ -126,7 +126,7 @@ var ai = {
 	 */
 	"move": function (dot, x, y) {
 		var got = get(x, y);
-		if (got == undefined) {
+		if (got === undefined) {
 			move(dot, x, y);
 			return true;
 		} else if (got.team != dot.team) {
@@ -140,7 +140,7 @@ var ai = {
 	 *  The team is randomly chosen between the two with a 50% chance
 	 */
 	"breed": function (dot, target) {
-		if (dot != undefined && target != undefined) {
+		if (dot !== undefined && target !== undefined) {
 			var team = dot.team;
 			
 			if (dot.team != target.team && Math.random() < 0.50) {
@@ -175,7 +175,7 @@ var ai = {
 	"moveAway": function (dot, pos) {
 		return ai.moveTowards(dot, pos, -1);
 	},
-}
+};
 
 var tasks = {
 	"reaper": function () {
@@ -193,10 +193,10 @@ var tasks = {
 			y = Math.round(random(-1, 1)),
 			target = get(this.x + x, this.y + y);
 
-		if (x == 0 && y == 0)
+		if (x === 0 && y === 0)
 			return false;
 
-		if (target != undefined && this.team != target.team) {
+		if (target !== undefined && this.team != target.team) {
 			if (Math.random() < 0.50) {
 				ai.infect(this, target);
 			} else {
@@ -231,7 +231,7 @@ var tasks = {
 			}
 		}*/
 		
-		if (targetTeam != undefined) {
+		if (targetTeam !== undefined) {
 			ai.moveTowards(this, teamCOG[targetTeam]);
 		}
 	},
@@ -253,8 +253,8 @@ var tasks = {
 			self = this;
 		function doCheck(xO, yO) {
 			var mate2 = get(self.x + xO, self.y + yO);
-			if (mate2 != undefined) {
-				if (mate == undefined)
+			if (mate2 !== undefined) {
+				if (mate === undefined)
 					mate = mate2;
 				else
 					mate = false;
@@ -272,7 +272,7 @@ var tasks = {
 		doCheck(1, 0);
 		doCheck(1, -1);
 		
-		if (mate != undefined && this.team == mate.team && mate != false) {
+		if (mate !== undefined && this.team == mate.team && mate !== false) {
 			ai.breed(this, mate);
 			return true;
 		}
@@ -287,13 +287,13 @@ var tasks = {
 };
 
 var mainAI = [
-	tasks["reaper"],
-	[tasks["wander"], 0.30],
-	[tasks["attack"], 0.30],
-//	[tasks["flee"], 0.50],
-	[tasks["hive"], 0.30],
-	[tasks["mitosis"], 0.03],
-//	[tasks["breed"], 0.01],
+	tasks.reaper,
+	[tasks.wander, 0.30],
+	[tasks.attack, 0.30],
+//	[tasksflee, 0.50],
+	[tasks.hive, 0.30],
+	[tasks.mitosis, 0.03],
+//	[tasks.breed, 0.01],
 ];
 
 
@@ -349,14 +349,14 @@ function get(x, y) {
 	var dot;
 	for (var i = 0; i < dots.length; i++) {
 		dot = dots[i];
-		if (Math.abs(dot.x - x) < .1 && Math.abs(dot.y - y) < .1) {
+		if (Math.abs(dot.x - x) < 0.1 && Math.abs(dot.y - y) < 0.1) {
 			return dot;
 		}
 	}
 }
 
 function setTeam(target, team) {
-	if (target.type != undefined && target.type.infected != undefined) {
+	if (target.type !== undefined && target.type.infected !== undefined) {
 		if (!target.type.infected.apply(target))
 			return;
 	}
@@ -376,8 +376,8 @@ function update() {
 		if (paused)
 			return;
 
-		if (dot.type != undefined) {
-			if (dot.type.pre != undefined) {
+		if (dot.type !== undefined) {
+			if (dot.type.pre !== undefined) {
 				dot.type.pre.apply(dot);
 			}
 		}
@@ -389,13 +389,13 @@ function update() {
 					continue;
 				ai = ai[0];
 			}
-			if (ai.apply(dot) == true) {
+			if (ai.apply(dot)) {
 				break;
 			}
 		}
 		
-		if (dot.type != undefined) {
-			if (dot.type.update != undefined) {
+		if (dot.type !== undefined) {
+			if (dot.type.update !== undefined) {
 				dot.type.update.apply(dot);
 			}
 		}
