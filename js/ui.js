@@ -4,6 +4,7 @@ var blockWidth = 12,
 	width,
 	height,
 	selectedTeam = teams[0],
+	showTitles = true,
 	paused = false;
 
 $(".button_pause").click(function() {

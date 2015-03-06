@@ -1,6 +1,6 @@
 function start() {
 	var o = (random(0, teams.length));
-	var eradius = 30,
+	var eradius = Math.min(width, height) / 3,
 		radius = 2; // radius = teams.length > 8 ? 1 : 2;
 	for (var i = 0; i < teams.length; i++) {
 		var r = (Math.PI * 2 ) * ((o + i) / teams.length);

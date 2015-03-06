@@ -5,8 +5,9 @@ function ring(r, team) {
 	var i = 0;
 	for (var a = 0; a < Math.PI * 2; a += 0.1) {
 		var x = width/2 + Math.cos(a) * r, 
-			y = height/2 + Math.sin(a) * r
-		if (get(x, y) == undefined) {
+			y = height/2 + Math.sin(a) * r;
+		
+		if (get(x, y) === undefined) {
 			create(team, x, y);
 		}
 	}
