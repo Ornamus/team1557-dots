@@ -1,7 +1,7 @@
 var	grid = true,
 	gridMargin = 0,
 	gridColor = "#545454";
-	
+
 var renderInterval = 1000 / 30;
 
 function loadImage(url) {
@@ -34,7 +34,7 @@ var tween2 = new TWEEN.Tween( interpolate )
 	.onComplete(function() {
 		// Reset the tween
 		interpolate.a = 0;
-		
+
 		// Update, rinse, repeat
 		update();
 		tween.start();
@@ -96,7 +96,7 @@ function render() {
 	} else {
 		interpolate.a = 1;
 	}
-	
+
 	// Draw the grid
 	ctx.fillStyle = pat;
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -105,24 +105,24 @@ function render() {
 		for (var x = 0; x < width; x++) {
 			for (var y = 0; y < height; y++) {
 				ctx.fillRect(
-					gridMargin + x * (blockWidth + blockMargin), 
+					gridMargin + x * (blockWidth + blockMargin),
 					gridMargin + y * (blockHeight + blockMargin),
-					blockWidth - gridMargin * 2, 
+					blockWidth - gridMargin * 2,
 					blockHeight - gridMargin * 2);
 			}
 		}
 	}*/
-	
+
 	teams.forEach(function (team) {
 		if (team.render !== undefined) {
 			team.render.apply(team);
 		}
 	});
-	
+
 	dots.forEach(function (dot) {
 		// Color to this block's team
 		ctx.fillStyle = dot.team.color;
-		
+
 		// Interpolate between the previous position, and the current position
 		var x = lerp(dot.oldX, dot.x, interpolate.a),
 			y = lerp(dot.oldY, dot.y, interpolate.a);
@@ -137,20 +137,22 @@ function render() {
 			// The block is morphing between teams, make it look small
 			sizeX = sizeY = blockWidth * interpolate.a;
 		}
-		
+
 		x = x * (blockWidth + blockMargin);
 		y = y * (blockHeight + blockMargin);
-		
+
 		ctx.fillRect(
-			(blockWidth-sizeX)/2 + x, 
-			(blockHeight-sizeY)/2 + y, 
-			sizeX, 
+			(blockWidth-sizeX)/2 + x,
+			(blockHeight-sizeY)/2 + y,
+			sizeX,
 			sizeY);
+
+		// Draw dot type image if the dot has a type
 		if (dot.type !== undefined && dot.type.image !== undefined) {
 			ctx.drawImage(images[dot.type.image], x, y);
 		}
 	});
-	
+
 	if (showTitles) {
 		ctx.font = "12px 'Roboto', sans-serif";
 		ctx.shadowBlur = 3;
@@ -170,27 +172,30 @@ function render() {
 		});
 		ctx.shadowBlur=0;
 	}
-	
+
+	// Draw highlighted grid spot wherever the mouse is
 	ctx.fillStyle = "rgba(225,225,225,0.5)";
 	ctx.fillRect(
 		mouse.x * (blockWidth + blockMargin),
 		mouse.y * (blockHeight + blockMargin),
 		blockWidth,
 		blockHeight);
-	
+
 	var hover = get(mouse.x, mouse.y);
 	if (hover !== undefined) {
-		var h = window.innerHeight - 8;
+		var h = window.innerHeight - 24;
+		var textX = 4;
 		ctx.font = "16px 'Roboto', sans-serif";
+
 		ctx.fillStyle = hover.team.color;
-		ctx.fillText(hover.team.name, 0, h);
+		ctx.fillText(hover.team.name, textX, h);
 		h -= 16;
 		if (hover.type !== undefined && hover.type.description !== undefined) {
 			ctx.fillStyle = "white";
-			ctx.fillText(hover.type.description, 0, h);
+			ctx.fillText(hover.type.description, textX, h);
 		}
 	}
-	
+
 	if (down && selectedTeam !== undefined) {
 		if (mouse.y >= 0 && get(mouse.x, mouse.y) === undefined) {
 			create(selectedTeam, mouse.x, mouse.y);

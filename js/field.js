@@ -1,5 +1,5 @@
 var updateInterval = 1000 / 20;
-
+var assignTypes = false;
 var dots = [];
 
 function reset() {
@@ -10,7 +10,7 @@ function reset() {
 function move(dot, x, y) {
 	if (x < 0 || y < 0 || x >= width || y >= height)
 		return false;
-	
+
 	dot.x = x;
 	dot.y = y;
 	return true;
@@ -40,6 +40,28 @@ function create(team, x, y) {
 		"oldY":		y,
 		"age":		0
 	};
+
+	/*
+	TODO: Assign typed dots out strategically and fairly instead of randomly. Figure out why
+	options #2 and #4 are not ever chosen by the random generator.
+	*/
+	if (assignTypes) {
+		if (random(1, 30) == 1) {
+			var t = random(1, 4);
+			if (t == 1) {
+				dot.type = types.king;
+			} else if (t == 2) {
+				dot.type == types.shield;
+			} else if (t == 3) {
+				dot.type = types.nuke;
+			} else if (t == 4) {
+				dot.type = types.suicide;
+			} else {
+				dot.type == types.shapeshifter; //Isn't able to be picked because of graphical glitches related to its AI or image
+			}
+		}
+	}
+
 	if (team.spawn !== undefined) {
 		team.spawn(dot);
 	}
@@ -65,7 +87,7 @@ function aiTick() {
 		combinedX += dot.x;
 		combinedY += dot.y;
 		teamCounts[dot.team.name] = (teamCounts[dot.team.name] || 0) + 1;
-		
+
 		teamCOG[dot.team.name] = teamCOG[dot.team.name] || {"x":0,"y":0,"i":0,"totalX":0,"totalY":0};
 		var teamcog = teamCOG[dot.team.name];
 		teamcog.totalX += dot.x;
@@ -73,7 +95,7 @@ function aiTick() {
 		teamcog.i++;
 		teamcog.x = teamcog.totalX / teamcog.i;
 		teamcog.y = teamcog.totalY / teamcog.i;
-		
+
 		i++;
 	});
 	cog.x = combinedX / i;
@@ -98,7 +120,7 @@ var ai = {
 			return true;
 		}
 	},
-	
+
 	/**
 	 *  Attacks a dot.
 	 *  Dot win odds is a decimal from 0 to 1, where 1 is a certain victory and 0 is certain defeat.
@@ -117,7 +139,7 @@ var ai = {
 			}
 		}
 	},
-	
+
 	/**
 	 *  Tries to move to the given coordinates.
 	 *  @returns
@@ -134,7 +156,7 @@ var ai = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 *  Tries to create a babby next to the pair.
 	 *  The team is randomly chosen between the two with a 50% chance
@@ -142,15 +164,15 @@ var ai = {
 	"breed": function (dot, target) {
 		if (dot !== undefined && target !== undefined) {
 			var team = dot.team;
-			
+
 			if (dot.team != target.team && Math.random() < 0.50) {
 				team = target.team;
 			}
-			
+
 			var newDot = create(team, dot.x, dot.y);
 		}
 	},
-	
+
 	"moveTowards": function (dot, pos, direction) {
 		direction = direction || 1;
 		var moved = false;
@@ -187,7 +209,7 @@ var tasks = {
 			}
 		}
 	},
-	
+
 	"wander": function () {
 		var x = Math.round(random(-1, 1)),
 			y = Math.round(random(-1, 1)),
@@ -208,7 +230,7 @@ var tasks = {
 			return ai.move(this, this.x + x, this.y + y);
 		}
 	},
-	
+
 	"attack": function () {
 		if (teamCounts[this.team.name] < 10)
 			return false;
@@ -221,7 +243,7 @@ var tasks = {
 				targetCount = teamCounts[team];
 			}
 		}
-		
+
 		/*var targetTeam,
 			targetCount = 0;
 		for (var team in teamCounts) {
@@ -230,16 +252,16 @@ var tasks = {
 				targetCount = teamCounts[team];
 			}
 		}*/
-		
+
 		if (targetTeam !== undefined) {
 			ai.moveTowards(this, teamCOG[targetTeam]);
 		}
 	},
-	
+
 	"hive": function () {
 		return ai.moveTowards(this, teamCOG[this.team.name]);
 	},
-	
+
 	"flee": function () {
 		if (teamCounts[this.team.name] < 10) {
 			if (Math.pow(cog.x - this.x, 2) + Math.pow(cog.y - this.y, 2) < Math.pow(15, 2)) {
@@ -247,7 +269,7 @@ var tasks = {
 			}
 		}
 	},
-	
+
 	"breed": function () {
 		var mate,
 			self = this;
@@ -260,24 +282,24 @@ var tasks = {
 					mate = false;
 			}
 		}
-		
+
 		doCheck(-1, 1);
 		doCheck(-1, 0);
 		doCheck(-1, -1);
-		
+
 		doCheck(0, 1);
 		doCheck(0, -1);
-		
+
 		doCheck(1, 1);
 		doCheck(1, 0);
 		doCheck(1, -1);
-		
+
 		if (mate !== undefined && this.team == mate.team && mate !== false) {
 			ai.breed(this, mate);
 			return true;
 		}
 	},
-	
+
 	"mitosis": function() {
 		if (teamCounts[this.team.name] < 5) {
 			ai.breed(this, this);
@@ -301,46 +323,53 @@ var teams = [];
 function addTeam(team) {
 	team.id = teams.length;
 	teams.push(team);
-	team.gui = $('<tr><td><div class="team-color" data-team="'+team.id+'" style="background-color:'+team.color+'"></div> '+team.name+'</td><td class="team-count" data-team="'+team.id+'">0</td></tr>').appendTo("#team-info-panel table");
-	
-	$('<span class="button button_color"></span>').appendTo("#buttons").click(function() {
-		selectedTeam = team;
-		$(".button_color").css({
-			"border": "0px",
-			"width": "16px",
-			"height": "16px"
-		});
-		$(this).css({
-			"border": "1px dashed black",
-			"width": "14px",
-			"height": "14px"
-		});
-	}).css("background-color", team.color);
-	
-	
 	return team;
+}
+
+function setupScoreboard() {
+	teams.sort(function (a,b) {
+		return a.number - b.number;
+	});
+
+	teams.forEach(function(team) {
+		team.gui = $('<tr><td><div class="team-color" data-team="'+team.id+'" style="background-color:'+team.color+'"></div> '+team.name+'</td><td class="team-count" data-team="'+team.id+'">0</td></tr>').appendTo("#team-info-panel table");
+
+		$('<span class="button button_color"></span>').appendTo("#buttons").click(function() {
+			selectedTeam = team;
+			$(".button_color").css({
+				"border": "0px",
+				"width": "16px",
+				"height": "16px"
+			});
+			$(this).css({
+				"border": "1px dashed black",
+				"width": "14px",
+				"height": "14px"
+			});
+		}).css("background-color", team.color);
+	});
 }
 
 function updateTeamTable() {
 	var d = 0;
-	
+
 	teams.forEach(function (team) {
 		var count = teamCounts[team.name] || 0;
-		$($(team.gui).find("td")[0]).html(team.number + " " + team.name);
+		$($(team.gui).find("td")[0]).html("(" + team.number + ") " + team.name);
 		$($(team.gui).find("td")[1]).html(count).parent().css("display", count > 0 ? "inherit" : "none");
-		
+
 		if (count > 0)
 			d++;
 	});
-	
+
 	if (teams.length > 1 && Object.getOwnPropertyNames(teamCounts).length > 0 && d <= 1) {
 		paused = true;
 		setTimeout(function() {
 			reset();
 			paused = false;
-			
+
 			teams[0].wins=(teams.wins||0) +1;
-			
+
 		}, 3000);
 	}
 }
@@ -372,7 +401,7 @@ function update() {
 		dot.oldTeam = dot.team;
 		dot.oldX = dot.x;
 		dot.oldY = dot.y;
-		
+
 		if (paused)
 			return;
 
@@ -381,7 +410,7 @@ function update() {
 				dot.type.pre.apply(dot);
 			}
 		}
-		
+
 		for (var i = 0; i < dot.team.ai.length; i++) {
 			var ai = dot.team.ai[i];
 			if (typeof ai == "object") {
@@ -393,14 +422,14 @@ function update() {
 				break;
 			}
 		}
-		
+
 		if (dot.type !== undefined) {
 			if (dot.type.update !== undefined) {
 				dot.type.update.apply(dot);
 			}
 		}
 	});
-	
+
 	updateTeamTable();
 }
 

@@ -4,7 +4,7 @@ function start() {
 		radius = 2; // radius = teams.length > 8 ? 1 : 2;
 	for (var i = 0; i < teams.length; i++) {
 		var r = (Math.PI * 2 ) * ((o + i) / teams.length);
-		
+
 		var dX = Math.cos(r) * eradius,
 			dY = Math.sin(r) * eradius;
 		for (var x = -radius; x <= radius; x++) {

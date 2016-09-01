@@ -9,13 +9,13 @@ var types = {
 		"name": "Knight",
 		"description": "The knight is unmatched in battle."
 	},
-	"shapeshifter": {
+	"shapeshifter": { //TODO: Fix black flashing causes by either AI or image
 		"image": "cycle",
 		"name": "Shapeshifter",
 		"description": "The shapeshifter occasionally changes itself and it's neighbors to a random team.",
 		"update": function() {
 			this.type.cycle = (this.type.cycle || 0) + 1;
-			
+
 			if (this.type.cycle > 20) {
 				this.team = teams[random(0, teams.length-1)];
 				ai.infect(this, get(this.x, this.y - 1));
@@ -37,7 +37,7 @@ var types = {
 						ai.attack(this, get(this.x - x, this.y - y));
 					}
 				}
-				
+
 				kill(this);
 			}
 		}
