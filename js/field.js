@@ -1,7 +1,16 @@
 var updateInterval = 1000 / 20;
-var assignTypes = false;
+var assignTypes = true;
 var dots = [];
 
+/*
+TODO LIST:
+
+* Find/make a way to get a list/array of all the dots in a team.
+* Once that ^ is done, fairly assign typed dots to all teams.
+* Fix stack overflow caused when two AIs with infected() functions that cause infections infect each other.
+* Different AIs on a dot-by-dot basis (or type-by-type?) instead of team-by-team.
+
+*/
 function reset() {
 	dots = [];
 	start();
@@ -41,22 +50,18 @@ function create(team, x, y) {
 		"age":		0
 	};
 
-	/*
-	TODO: Assign typed dots out strategically and fairly instead of randomly. Figure out why
-	options #2 and #4 are not ever chosen by the random generator.
-	*/
 	if (assignTypes) {
 		if (random(1, 30) == 1) {
-			var t = random(1, 4);
+			var t = random(2, 2);
 			if (t == 1) {
 				dot.type = types.king;
 			} else if (t == 2) {
-				dot.type == types.shield;
+				dot.type = types.shield;
 			} else if (t == 3) {
 				dot.type = types.nuke;
 			} else if (t == 4) {
 				dot.type = types.suicide;
-			} else {
+			} else if (t == 5){
 				dot.type == types.shapeshifter; //Isn't able to be picked because of graphical glitches related to its AI or image
 			}
 		}
@@ -151,6 +156,17 @@ var ai = {
 		if (got === undefined) {
 			move(dot, x, y);
 			return true;
+		} else if (dot.team == got.team && dot.type !== undefined && got.type === undefined) { //Allows typed dots to move around inside their own team
+			if (dot.movedThroughTeam === undefined) dot.movedThroughTeam = false;
+			if (!dot.movedThroughTeam) {
+				move(got, dot.x, dot.y);
+				move(dot, x, y);
+				dot.movedThroughTeam = true;
+				return true;
+			} else {
+				dot.movedThroughTeam = false;
+				return false;
+			}
 		} else if (got.team != dot.team) {
 			ai.infect(dot, got, 0.7);
 		}

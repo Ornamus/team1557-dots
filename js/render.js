@@ -12,7 +12,9 @@ function loadImage(url) {
 
 var images = {
 	"cycle": loadImage("cycle.png"),
-	"defense": loadImage("defense.png"),
+	"shield": loadImage("shield.png"),
+	"shield_broken": loadImage("shield_broken.png"),
+	//"king": loadImage("crown-silver.png"), //Looks better than the black icons?
 	"king": loadImage("king.png"),
 	"nuke": loadImage("nuke.png"),
 	"suicide": loadImage("suicide.png"),
@@ -149,7 +151,7 @@ function render() {
 
 		// Draw dot type image if the dot has a type
 		if (dot.type !== undefined && dot.type.image !== undefined) {
-			ctx.drawImage(images[dot.type.image], x, y);
+			ctx.drawImage(images[dot.type.image], x - 2, y - 1);
 		}
 	});
 
@@ -181,6 +183,9 @@ function render() {
 		blockWidth,
 		blockHeight);
 
+	// Draw dot's team name and type description (if it has one) when hovered over by the mouse
+	//TODO: If the mouse doesn't move, keep showing the same dot's information even if it has moved out from under the mouse.
+	//TODO: Draw the black box from the team list behind the text being rendered here (for readability)
 	var hover = get(mouse.x, mouse.y);
 	if (hover !== undefined) {
 		var h = window.innerHeight - 24;
