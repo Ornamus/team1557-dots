@@ -184,20 +184,33 @@ function render() {
 		blockHeight);
 
 	// Draw dot's team name and type description (if it has one) when hovered over by the mouse
-	//TODO: If the mouse doesn't move, keep showing the same dot's information even if it has moved out from under the mouse.
-	//TODO: Draw the black box from the team list behind the text being rendered here (for readability)
+	//TODO: If the team name is too dark, draw the background as white instead of black.
 	var hover = get(mouse.x, mouse.y);
 	if (hover !== undefined) {
 		var h = window.innerHeight - 24;
 		var textX = 4;
+
 		ctx.font = "16px 'Roboto', sans-serif";
+
+		var drawTypeDescription = hover.type !== undefined && hover.type.description !== undefined;
+		var typeText = undefined;
+		var stringWidth = undefined;
+		if (drawTypeDescription) {
+			typeText = hover.type.name + " - " + hover.type.description;
+			stringWidth = ctx.measureText(typeText).width;
+		} else {
+			stringWidth = ctx.measureText(hover.team.name).width;
+		}
+
+		ctx.fillStyle = "rgba(0,0,0,0.5)";
+		ctx.fillRect(0, h - 20 - (drawTypeDescription ? 19 : 0), stringWidth + 8, 100);
 
 		ctx.fillStyle = hover.team.color;
 		ctx.fillText(hover.team.name, textX, h);
-		h -= 16;
-		if (hover.type !== undefined && hover.type.description !== undefined) {
+		h -= 19;
+		if (drawTypeDescription) {
 			ctx.fillStyle = "white";
-			ctx.fillText(hover.type.description, textX, h);
+			ctx.fillText(typeText, textX, h);
 		}
 	}
 

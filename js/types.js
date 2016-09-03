@@ -27,12 +27,12 @@ var types = {
 			if (this.shieldRepair > 50) {
 				this.shieldRepair = 0;
 				this.type = types.shield;
-				console.log("A knight has repaired his shield.");
+				//console.log("A knight has repaired his shield.");
 			}
 		},
 		"infected": function() {
-				this.shieldRepair = 0;
-				this.type = types.shield; //TODO: Should the shield not auto-repair when the dot is infected?
+				//this.shieldRepair = 0; // Don't delete current repair status
+				//this.type = types.shield; // Don't auto-repair the shield when infected
 				return true;
 		}
 	},

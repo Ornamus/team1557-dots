@@ -7,6 +7,7 @@ TODO LIST:
 
 * Find/make a way to get a list/array of all the dots in a team.
 * Once that ^ is done, fairly assign typed dots to all teams.
+* Write a function that can decide if a team's color is too dark to interact well with black backgrounds/text/type icons.
 * Fix stack overflow caused when two AIs with infected() functions that cause infections infect each other.
 * Different AIs on a dot-by-dot basis (or type-by-type?) instead of team-by-team.
 
@@ -333,7 +334,6 @@ var mainAI = [
 	[tasks.mitosis, 0.03],
 //	[tasks.breed, 0.01],
 ];
-
 
 var teams = [];
 function addTeam(team) {
