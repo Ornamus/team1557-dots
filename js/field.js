@@ -1,5 +1,6 @@
 var updateInterval = 1000 / 20;
 var assignTypes = true;
+var onlineMode = true;
 var dots = [];
 
 /*
@@ -335,34 +336,56 @@ var mainAI = [
 //	[tasks.breed, 0.01],
 ];
 
+function arrayContains(a, obj) {
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
 var teams = [];
 function addTeam(team) {
-	team.id = teams.length;
-	teams.push(team);
+	var exists = false;
+	for (var i = 0; i < teams.length; i++) {
+		var otherTeam = teams[i];
+		if (otherTeam.number == team.number || otherTeam.name == team.name) {
+			exists = true;
+		}
+	}
+	if (exists == false) {
+		team.id = teams.length;
+		teams.push(team);
+	}
 	return team;
 }
 
+var teamsOnScoreboard = [];
 function setupScoreboard() {
 	teams.sort(function (a,b) {
 		return a.number - b.number;
 	});
 
 	teams.forEach(function(team) {
-		team.gui = $('<tr><td><div class="team-color" data-team="'+team.id+'" style="background-color:'+team.color+'"></div> '+team.name+'</td><td class="team-count" data-team="'+team.id+'">0</td></tr>').appendTo("#team-info-panel table");
+		if (!arrayContains(teamsOnScoreboard, team)) {
+			team.gui = $('<tr><td><div class="team-color" data-team="'+team.id+'" style="background-color:'+team.color+'"></div> '+team.name+'</td><td class="team-count" data-team="'+team.id+'">0</td></tr>').appendTo("#team-info-panel table");
 
-		$('<span class="button button_color"></span>').appendTo("#buttons").click(function() {
-			selectedTeam = team;
-			$(".button_color").css({
-				"border": "0px",
-				"width": "16px",
-				"height": "16px"
-			});
-			$(this).css({
-				"border": "1px dashed black",
-				"width": "14px",
-				"height": "14px"
-			});
-		}).css("background-color", team.color);
+			$('<span class="button button_color"></span>').appendTo("#buttons").click(function() {
+				selectedTeam = team;
+				$(".button_color").css({
+					"border": "0px",
+					"width": "16px",
+					"height": "16px"
+				});
+				$(this).css({
+					"border": "1px dashed black",
+					"width": "14px",
+					"height": "14px"
+				});
+			}).css("background-color", team.color);
+			teamsOnScoreboard.push(team);
+		}
 	});
 }
 
